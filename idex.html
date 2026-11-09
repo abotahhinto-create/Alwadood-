@@ -1,1 +1,684 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مكتب الودود للنقل الثقيل - عدن</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* ================= الثيمات الحديثة (5 ثيمات 2024) ================= */
+        :root {
+            --bg-color: #0b0f19;
+            --surface-color: rgba(255, 255, 255, 0.05);
+            --surface-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --glass-blur: blur(16px);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        body.theme-cyberpunk {
+            --bg-color: #120a1f; --surface-color: rgba(255, 0, 85, 0.05); --surface-border: rgba(255, 0, 85, 0.2);
+            --text-main: #fce7f3; --primary: #ff0055; --primary-hover: #d90048; --accent: #00f0ff;
+        }
+        body.theme-oceanic {
+            --bg-color: #02182b; --surface-color: rgba(0, 136, 255, 0.08); --surface-border: rgba(0, 136, 255, 0.2);
+            --text-main: #e0f2fe; --primary: #0088ff; --primary-hover: #0066cc; --accent: #38bdf8;
+        }
+        body.theme-minimalist {
+            --bg-color: #f1f5f9; --surface-color: #ffffff; --surface-border: #cbd5e1;
+            --text-main: #0f172a; --text-muted: #64748b; --primary: #0f172a; --primary-hover: #334155; --accent: #ea580c;
+            --shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+        body.theme-emerald {
+            --bg-color: #022c22; --surface-color: rgba(16, 185, 129, 0.08); --surface-border: rgba(16, 185, 129, 0.2);
+            --text-main: #ecfdf5; --primary: #10b981; --primary-hover: #059669; --accent: #fbbf24;
+        }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; transition: all 0.3s ease; }
+        body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; min-height: 100vh; background-image: radial-gradient(circle at top right, var(--surface-color) 0%, transparent 40%), radial-gradient(circle at bottom left, var(--surface-color) 0%, transparent 40%); }
+
+        /* العناصر المتحركة */
+        .floating-bg { position: fixed; z-index: -1; opacity: 0.15; pointer-events: none; font-size: 5rem; animation: floatUp 20s infinite linear; }
+        @keyframes floatUp { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 0.15; } 90% { opacity: 0.15; } 100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; } }
+
+        /* شريط العروض */
+        .ticker-wrapper { width: 100%; background: var(--surface-color); backdrop-filter: var(--glass-blur); border-bottom: 1px solid var(--surface-border); overflow: hidden; padding: 12px 0; position: relative; z-index: 10; }
+        .ticker { display: inline-block; white-space: nowrap; animation: marquee 30s linear infinite; font-weight: 700; color: var(--accent); }
+        .ticker span { margin: 0 40px; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        /* القائمة الجانبية */
+        .sidebar { position: fixed; top: 0; right: -320px; width: 300px; height: 100vh; background: var(--surface-color); backdrop-filter: var(--glass-blur); border-left: 1px solid var(--surface-border); padding: 25px 20px; z-index: 1000; transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: -10px 0 30px rgba(0,0,0,0.3); overflow-y: auto; }
+        .sidebar.active { right: 0; }
+        .logo-container { text-align: center; margin-bottom: 30px; }
+        .logo-container img { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); box-shadow: 0 0 20px var(--primary); }
+        .logo-container h2 { color: var(--text-main); margin-top: 15px; font-size: 22px; }
+        .sidebar ul { list-style: none; }
+        .sidebar ul li { margin: 12px 0; }
+        .sidebar ul li a { color: var(--text-main); text-decoration: none; font-size: 18px; display: flex; align-items: center; gap: 10px; padding: 12px 15px; border-radius: 12px; font-weight: 600; }
+        .sidebar ul li a:hover { background: var(--primary); color: #fff; transform: translateX(-5px); }
+        .theme-btns { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; justify-content: center;}
+        .theme-btn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+        .theme-btn:hover { transform: scale(1.2); border-color: var(--text-main); }
+        .btn-t1 { background: #6366f1; } .btn-t2 { background: #ff0055; } .btn-t3 { background: #0088ff; } .btn-t4 { background: #f1f5f9; } .btn-t5 { background: #10b981; }
+
+        /* المحتوى الرئيسي */
+        .main-content { padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .menu-toggle { position: fixed; top: 70px; right: 20px; z-index: 1001; background: var(--primary); color: #fff; border: none; padding: 12px 18px; border-radius: 50%; cursor: pointer; font-size: 22px; box-shadow: var(--shadow); width: 55px; height: 55px; }
+        .menu-toggle:hover { background: var(--primary-hover); }
+
+        header { text-align: center; margin: 100px 0 50px; }
+        header h1 { font-size: 3rem; color: var(--accent); margin-bottom: 15px; text-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        header p { font-size: 1.3rem; color: var(--text-muted); font-weight: 600; margin-bottom: 30px; }
+        .hero-img { width: 100%; max-width: 800px; height: 350px; object-fit: cover; border-radius: 24px; box-shadow: var(--shadow); border: 1px solid var(--surface-border); }
+
+        section { margin-bottom: 60px; padding: 40px; background: var(--surface-color); backdrop-filter: var(--glass-blur); border-radius: 24px; border: 1px solid var(--surface-border); box-shadow: var(--shadow); }
+        section h2 { color: var(--accent); margin-bottom: 30px; font-size: 2rem; display: flex; align-items: center; gap: 12px; }
+        section h2::before { content: ''; display: block; width: 6px; height: 35px; background: var(--primary); border-radius: 5px; }
+
+        /* العروض */
+        .offers-container { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; scroll-snap-type: x mandatory; }
+        .offers-container::-webkit-scrollbar { height: 8px; } .offers-container::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; } .offers-container::-webkit-scrollbar-track { background: var(--surface-border); border-radius: 10px; }
+        .offer-card { flex: 0 0 320px; scroll-snap-align: start; background: var(--bg-color); padding: 30px 20px; border-radius: 20px; text-align: center; border: 1px solid var(--surface-border); position: relative; overflow: hidden; }
+        .offer-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--primary), var(--accent)); }
+        .offer-card:hover { transform: translateY(-10px); box-shadow: var(--shadow); }
+        .offer-card h3 { color: var(--accent); margin-bottom: 15px; font-size: 1.5rem; }
+        .offer-card p { margin: 10px 0; color: var(--text-muted); }
+        .offer-card strong { color: var(--primary); font-size: 1.2rem; }
+
+        /* الأزرار */
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 25px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; font-size: 1rem; text-decoration: none; width: 100%; }
+        .btn-primary { background: var(--primary); color: #fff; } .btn-primary:hover { background: var(--primary-hover); transform: scale(1.02); }
+        .btn-wa { background: #25D366; color: #fff; margin-top: 20px; } .btn-wa:hover { background: #128C7E; }
+        .btn-accent { background: var(--accent); color: #000; } .btn-accent:hover { opacity: 0.9; }
+
+        /* حاسبة التكلفة */
+        .calculator { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .calculator { grid-template-columns: 1fr; } }
+        .input-group { display: flex; flex-direction: column; gap: 8px; }
+        .input-group label { font-weight: 600; color: var(--text-main); }
+        .input-group input, .input-group select { padding: 15px; border-radius: 12px; border: 1px solid var(--surface-border); background: var(--surface-color); color: var(--text-main); font-size: 1rem; outline: none; }
+        .input-group input:focus, .input-group select:focus { border-color: var(--primary); }
+        .result-box { grid-column: 1 / -1; margin-top: 20px; padding: 30px; background: var(--bg-color); border-radius: 16px; text-align: center; border: 2px dashed var(--accent); display: none; }
+        .result-box h3 { font-size: 1.8rem; margin-bottom: 10px; }
+
+        /* آلية العمل */
+        .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+        .step { background: var(--bg-color); padding: 30px 20px; border-radius: 16px; text-align: center; border: 1px solid var(--surface-border); }
+        .step:hover { border-color: var(--primary); }
+        .step .icon { font-size: 3rem; margin-bottom: 15px; }
+        .step h3 { color: var(--accent); margin-bottom: 10px; }
+
+        /* النوافذ المنبثقة */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: var(--bg-color); padding: 30px; border-radius: 20px; width: 90%; max-width: 500px; border: 1px solid var(--surface-border); position: relative; animation: slideUp 0.4s ease; max-height: 90vh; overflow-y: auto; }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .close-btn { position: absolute; top: 15px; left: 15px; background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; }
+
+        /* سند الطلب */
+        #voucher-modal .modal-content { max-width: 700px; background: #fff; color: #000; }
+        .voucher-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 20px; }
+        .voucher-header img { width: 80px; height: 80px; border-radius: 50%; margin-bottom: 10px; }
+        .voucher-header h2 { color: #000; margin: 0; font-size: 24px; }
+        .voucher-body p { font-size: 18px; line-height: 2; margin-bottom: 10px; }
+        .voucher-footer { margin-top: 30px; display: flex; justify-content: space-between; }
+        .voucher-footer div { text-align: center; }
+
+        @media print {
+            body * { visibility: hidden; }
+            #voucher-modal, #voucher-modal * { visibility: visible; }
+            #voucher-modal { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: #fff; display: block; }
+            .modal-content { border: none; box-shadow: none; max-width: 100%; }
+            .close-btn, .print-btn-container, .wa-share-btn { display: none !important; }
+        }
+
+        /* لوحة التحكم */
+        #admin-dashboard { display: none; }
+        .login-box { max-width: 400px; margin: 80px auto; background: var(--surface-color); padding: 40px; border-radius: 20px; backdrop-filter: var(--glass-blur); text-align: center; border: 1px solid var(--surface-border); }
+        .login-box input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; border: 1px solid var(--surface-border); background: var(--bg-color); color: var(--text-main); }
+        .dashboard-table-wrapper { overflow-x: auto; margin-top: 20px; }
+        .dashboard-table { width: 100%; border-collapse: collapse; text-align: right; background: var(--bg-color); border-radius: 12px; overflow: hidden; }
+        .dashboard-table th, .dashboard-table td { padding: 15px; border-bottom: 1px solid var(--surface-border); }
+        .dashboard-table th { background: var(--primary); color: #fff; font-weight: 600; }
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+        .badge-vip { background: rgba(245, 158, 11, 0.2); color: var(--accent); border: 1px solid var(--accent); }
+
+        /* الفوتر */
+        footer { text-align: center; padding: 40px; margin-top: 50px; border-top: 1px solid var(--surface-border); }
+        .designer-card { display: inline-block; background: var(--surface-color); padding: 20px 40px; border-radius: 20px; border: 1px solid var(--primary); margin-bottom: 20px; backdrop-filter: var(--glass-blur); }
+        .designer-card h4 { color: var(--accent); margin-bottom: 5px; }
+        .designer-card a { color: #25D366; text-decoration: none; font-weight: bold; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+
+    <div class="floating-bg" style="left: 5%; animation-delay: 0s;">🚢</div>
+    <div class="floating-bg" style="left: 25%; animation-delay: 5s;">📦</div>
+    <div class="floating-bg" style="left: 50%; animation-delay: 2s;">🚛</div>
+    <div class="floating-bg" style="left: 75%; animation-delay: 8s;">🏗️</div>
+    <div class="floating-bg" style="left: 90%; animation-delay: 12s;">📦</div>
+
+    <div class="ticker-wrapper">
+        <div class="ticker">
+            <span>🚚 تم حجز نقل 5 حاويات من عدن إلى صنعاء بنجاح!</span>
+            <span>📦 تم توصيل شحنة من تعز إلى عدن بسلام.</span>
+            <span>🔥 خصم 10% على الحجوزات الذهاب والعودة.</span>
+            <span>🚛 أسطولنا جاهز لنقل حاوياتك 24/7.</span>
+        </div>
+    </div>
+
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+    <div class="sidebar" id="sidebar">
+        <div class="logo-container">
+            <!-- تأكد من وجود صورة logo.jpg في نفس المجلد -->
+            <img src="logo.jpg" alt="شعار الودود" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2830/2830305.png'">
+            <h2>مكتب الودود</h2>
+        </div>
+        <ul>
+            <li><a href="#home" onclick="toggleSidebar()">الرئيسية</a></li>
+            <li><a href="#offers" onclick="toggleSidebar()">العروض</a></li>
+            <li><a href="#calculator" onclick="toggleSidebar()">احسب تكلفتك</a></li>
+            <li><a href="#how-it-works" onclick="toggleSidebar()">آلية النقل</a></li>
+            <li><a href="#admin" onclick="showAdminLogin(); toggleSidebar();">لوحة التحكم</a></li>
+        </ul>
+        
+        <h3 style="margin-top:30px; font-size:16px; text-align:center; color: var(--accent);">تغيير المظهر</h3>
+        <div class="theme-btns">
+            <button class="theme-btn btn-t1" onclick="setTheme('')" title="الافتراضي"></button>
+            <button class="theme-btn btn-t2" onclick="setTheme('theme-cyberpunk')" title="سايبر بانك"></button>
+            <button class="theme-btn btn-t3" onclick="setTheme('theme-oceanic')" title="المحيط"></button>
+            <button class="theme-btn btn-t4" onclick="setTheme('theme-minimalist')" title="فاتح"></button>
+            <button class="theme-btn btn-t5" onclick="setTheme('theme-emerald')" title="الزمرد"></button>
+        </div>
+    </div>
+
+    <div class="main-content" id="main-site">
+        <header id="home">
+            <h1>مكتب الودود للنقل الثقيل</h1>
+            <p>نقل الحاويات من عدن إلى جميع المحافظات والعكس بأمان وسرعة</p>
+            <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="شاحنات وحاويات" class="hero-img">
+        </header>
+
+        <section id="offers">
+            <h2>أحدث عروض النقل</h2>
+            <div class="offers-container">
+                <div class="offer-card">
+                    <h3>عدن ➡️ صنعاء</h3>
+                    <p>نقل حاويات 20 و 40 قدم</p>
+                    <p>السعر يبدأ من: <strong>450,000 ريال</strong></p>
+                    <button class="btn btn-wa" onclick="openBookingModal('عدن', 'صنعاء', 1, 450000)">💬 تواصل واتساب</button>
+                </div>
+                <div class="offer-card">
+                    <h3>عدن ➡️ تعز</h3>
+                    <p>نقل حاويات 20 و 40 قدم</p>
+                    <p>السعر يبدأ من: <strong>300,000 ريال</strong></p>
+                    <button class="btn btn-wa" onclick="openBookingModal('عدن', 'تعز', 1, 300000)">💬 تواصل واتساب</button>
+                </div>
+                <div class="offer-card">
+                    <h3>عدن ➡️ حضرموت</h3>
+                    <p>نقل حاويات 20 و 40 قدم</p>
+                    <p>السعر يبدأ من: <strong>600,000 ريال</strong></p>
+                    <button class="btn btn-wa" onclick="openBookingModal('عدن', 'حضرموت', 1, 600000)">💬 تواصل واتساب</button>
+                </div>
+                <div class="offer-card">
+                    <h3>عدن ➡️ الحديدة</h3>
+                    <p>نقل حاويات 20 و 40 قدم</p>
+                    <p>السعر يبدأ من: <strong>380,000 ريال</strong></p>
+                    <button class="btn btn-wa" onclick="openBookingModal('عدن', 'الحديدة', 1, 380000)">💬 تواصل واتساب</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="calculator">
+            <h2>حاسبة التكلفة الذكية</h2>
+            <div class="calculator">
+                <div class="input-group">
+                    <label>من (نقطة الانطلاق):</label>
+                    <select id="from-city"></select>
+                </div>
+                <div class="input-group">
+                    <label>إلى (نقطة الوصول):</label>
+                    <select id="to-city"></select>
+                </div>
+                <div class="input-group" style="grid-column: 1 / -1;">
+                    <label>عدد الحاويات:</label>
+                    <input type="number" id="container-count" value="1" min="1" max="20">
+                </div>
+                <button class="btn btn-primary" style="grid-column: 1 / -1;" onclick="calculatePrice()">احسب التكلفة الآن</button>
+            </div>
+            <div class="result-box" id="result-box">
+                <h3>التكلفة التقديرية: <span id="price-result" style="color: var(--primary);">0</span> ريال</h3>
+                <p id="distance-result" style="margin: 15px 0; color: var(--text-muted);"></p>
+                <button class="btn btn-wa" id="calc-wa-btn" onclick="openBookingFromCalc()">تأكيد الحجز عبر واتساب</button>
+            </div>
+        </section>
+
+        <section id="how-it-works">
+            <h2>آلية النقل خطوة بخطوة</h2>
+            <div class="steps">
+                <div class="step"><div class="icon">📝</div><h3>1. الطلب</h3><p>تحديد المسار وعدد الحاويات وإدخال بياناتك للحصول على سند طلب رسمي.</p></div>
+                <div class="step"><div class="icon">🏗️</div><h3>2. التحميل</h3><p>تحميل الحاويات في ميناء عدن وتثبيتها بإحكام على القاطرات.</p></div>
+                <div class="step"><div class="icon">🚛</div><h3>3. الرحلة</h3><p>انطلاق القاطرة مع سائق محترف ومتابعة الشحنة حتى الوصول.</p></div>
+                <div class="step"><div class="icon">✅</div><h3>4. التسليم</h3><p>تفريغ الحاوية وتسليمها للعميل بعد التأكد من سلامتها.</p></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- نافذة إدخال بيانات العميل -->
+    <div class="modal-overlay" id="booking-modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('booking-modal')">&times;</button>
+            <h2 style="color: var(--accent); margin-bottom: 20px; text-align: center;">بيانات الحجز</h2>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 20px;">يرجى إدخال بياناتك لإنشاء سند طلب رسمي</p>
+            
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label>اسم العميل / الشركة:</label>
+                <input type="text" id="client-name" placeholder="مثال: شركة الأمل التجارية">
+            </div>
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label>رقم التلفون:</label>
+                <input type="tel" id="client-phone" placeholder="مثال: 77XXXXXXX">
+            </div>
+            <div class="input-group" style="margin-bottom: 25px;">
+                <label>العنوان:</label>
+                <input type="text" id="client-address" placeholder="المحافظة - المديرية - الشارع">
+            </div>
+            
+            <button class="btn btn-primary" onclick="submitBooking()" id="submit-btn">إنشاء سند الطلب</button>
+        </div>
+    </div>
+
+    <!-- نافذة سند الطلب -->
+    <div class="modal-overlay" id="voucher-modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('voucher-modal')" style="color: #000;">&times;</button>
+            <div id="print-area">
+                <div class="voucher-header">
+                    <img src="logo.jpg" alt="Logo" onerror="this.style.display='none'">
+                    <h2>مكتب الودود للنقل الثقيل</h2>
+                    <p style="margin: 5px 0;">عدن - اليمن | هاتف: 772120250 - 771115273</p>
+                    <hr style="border: 1px solid #000; margin-top: 10px;">
+                </div>
+                <div class="voucher-body">
+                    <h3 style="text-align: center; margin-bottom: 20px; text-decoration: underline;">سند طلب نقل حاويات</h3>
+                    <p><strong>التاريخ:</strong> <span id="v-date"></span></p>
+                    <p><strong>نحن السيد/السادة:</strong> <span id="v-client-name"></span></p>
+                    <p><strong>رقم الهاتف:</strong> <span id="v-client-phone"></span></p>
+                    <p><strong>العنوان:</strong> <span id="v-client-address"></span></p>
+                    <br>
+                    <p>نرجو من شركتكم الموقرة تلبية طلبنا بنقل الحاويات التالية:</p>
+                    <ul style="margin-right: 20px; font-size: 18px; line-height: 2;">
+                        <li><strong>من:</strong> <span id="v-from"></span></li>
+                        <li><strong>إلى:</strong> <span id="v-to"></span></li>
+                        <li><strong>عدد الحاويات:</strong> <span id="v-count"></span></li>
+                        <li><strong>التكلفة الإجمالية التقديرية:</strong> <span id="v-price" style="font-weight: bold; color: #000;"></span></li>
+                    </ul>
+                    <p style="margin-top: 20px;">شاكرين لكم حسن تعاونكم وتلبية طلبنا.</p>
+                </div>
+                <div class="voucher-footer">
+                    <div><p>توقيع العميل</p><br><br><p>.........................</p></div>
+                    <div><p>ختم المكتب</p><br><br><p>.........................</p></div>
+                </div>
+            </div>
+            <div class="print-btn-container" style="display: flex; gap: 10px; margin-top: 25px;">
+                <button class="btn btn-accent" onclick="window.print()">🖨️ طباعة السند</button>
+                <button class="btn btn-wa wa-share-btn" onclick="shareWhatsApp()">مشاركة عبر واتساب</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- لوحة التحكم -->
+    <div class="main-content" id="admin-dashboard">
+        <div id="login-screen" class="login-box">
+            <h2 style="color: var(--accent); margin-bottom: 20px;">تسجيل دخول المدير</h2>
+            <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 15px;">الإيميل: admin@alwadood.com<br>الباسورد: 12345</p>
+            <input type="email" id="admin-email" placeholder="البريد الإلكتروني">
+            <input type="password" id="admin-pass" placeholder="كلمة المرور">
+            <button class="btn btn-primary" onclick="loginAdmin()" style="margin-top: 15px;">دخول</button>
+            <button class="btn btn-primary" onclick="hideAdmin()" style="background: #ef4444; margin-top: 10px;">عودة للموقع</button>
+        </div>
+
+        <div id="dashboard-content" style="display: none; background: var(--surface-color); padding: 30px; border-radius: 20px; border: 1px solid var(--surface-border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <h2 style="color: var(--accent);">إدارة العملاء والطلبات</h2>
+                <button class="btn btn-primary" onclick="hideAdmin()" style="background: #ef4444; width: auto;">خروج</button>
+            </div>
+            
+            <h3 style="margin-bottom: 15px;">العملاء الأكثر طلباً (VIP)</h3>
+            <div class="dashboard-table-wrapper">
+                <table class="dashboard-table">
+                    <thead>
+                        <tr><th>اسم العميل</th><th>رقم الهاتف</th><th>العنوان</th><th>عدد الطلبات</th><th>الحالة</th></tr>
+                    </thead>
+                    <tbody id="vip-clients-table">
+                        <!-- سيتم تعبئتها بالبيانات -->
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 style="margin-top: 40px; margin-bottom: 15px;">سجل الطلبات (سندات النقل)</h3>
+            <div class="dashboard-table-wrapper">
+                <table class="dashboard-table">
+                    <thead>
+                        <tr><th>التاريخ</th><th>اسم العميل</th><th>رقم الهاتف</th><th>من</th><th>إلى</th><th>الحاويات</th><th>التكلفة</th></tr>
+                    </thead>
+                    <tbody id="orders-table">
+                        <!-- سيتم تعبئتها بالبيانات -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="designer-card">
+            <h4>تصميم وتطوير</h4>
+            <p style="font-weight: bold; margin-bottom: 5px;">م. نشوان البدري</p>
+            <a href="https://wa.me/967771713275" target="_blank">📞 تواصل مع الدعم: 771713275</a>
+        </div>
+        <p style="color: var(--text-muted); font-size: 14px;">جميع الحقوق محفوظة &copy; 2024 مكتب الودود للنقل الثقيل</p>
+    </footer>
+
+    <!-- ==================== الجزء الخاص بـ Firebase (محدث) ==================== -->
+    <script type="module">
+        // 1. استيراد دوال Firebase المطلوبة
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // 2. إعدادات Firebase الخاصة بك
+        const firebaseConfig = {
+            apiKey: "AIzaSyDPp5OQAzuJOMBsnUQBJWVMcDeeCcSZnGE",
+            authDomain: "alwadood-transport.firebaseapp.com",
+            projectId: "alwadood-transport",
+            storageBucket: "alwadood-transport.firebasestorage.app",
+            messagingSenderId: "622121306918",
+            appId: "1:622121306918:web:12c682f48aa65eb4718fe7"
+        };
+
+        // 3. تهيئة Firebase وقاعدة البيانات
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 4. دالة حفظ طلب جديد في Firebase (تُستدعى من دالة submitBooking)
+        window.saveOrderToDatabase = async function(order) {
+            try {
+                // إضافة الطلب إلى مجموعة باسم "orders"
+                await addDoc(collection(db, "orders"), order);
+                console.log("تم حفظ الطلب بنجاح في Firebase!");
+            } catch (e) {
+                console.error("خطأ في حفظ الطلب: ", e);
+                alert("حدث خطأ أثناء الاتصال بقاعدة البيانات. تأكد من اتصالك بالإنترنت.");
+            }
+        };
+
+        // 5. دالة جلب الطلبات من Firebase (تُستدعى من لوحة التحكم)
+        window.getOrders = async function() {
+            try {
+                const ordersCol = collection(db, "orders");
+                // ترتيب الطلبات حسب التاريخ (الأحدث أولاً)
+                const q = query(ordersCol, orderBy("dateISO", "desc"));
+                const querySnapshot = await getDocs(q);
+                let orders = [];
+                querySnapshot.forEach((doc) => {
+                    orders.push(doc.data());
+                });
+                return orders;
+            } catch (e) {
+                console.error("خطأ في جلب الطلبات: ", e);
+                return [];
+            }
+        };
+    </script>
+
+    <!-- ==================== الجزء الخاص بواجهة الموقع (JS) ==================== -->
+    <script>
+        // إدارة الثيمات
+        function setTheme(themeName) {
+            document.body.className = '';
+            if (themeName !== '') document.body.classList.add(themeName);
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // تعبئة المحافظات
+        const yemenGovernorates = ["عدن", "صنعاء", "تعز", "الحديدة", "إب", "ذمار", "حضرموت", "حجة", "صعدة", "البيضاء", "أبين", "الجوف", "المحويت", "ريمة", "مأرب", "المهرة", "شبوة", "لحج", "الضالع", "عمران", "أرخبيل سقطرى"];
+
+        function populateGovernorates() {
+            const fromSelect = document.getElementById('from-city');
+            const toSelect = document.getElementById('to-city');
+            yemenGovernorates.forEach(gov => {
+                fromSelect.add(new Option(gov, gov));
+                toSelect.add(new Option(gov, gov));
+            });
+            fromSelect.value = "عدن";
+            toSelect.value = "صنعاء";
+        }
+        populateGovernorates();
+
+        // حاسبة التكلفة
+        const distanceData = { 'عدن-صنعاء': 450, 'عدن-تعز': 250, 'عدن-حضرموت': 700, 'عدن-الحديدة': 500, 'عدن-إب': 300, 'عدن-ذمار': 380, 'عدن-لحج': 45, 'عدن-أبين': 120, 'عدن-شبوة': 450, 'عدن-المهرة': 1100, 'عدن-مأرب': 550, 'عدن-الجوف': 600, 'عدن-صعدة': 650, 'عدن-حجة': 550, 'عدن-البيضاء': 250, 'عدن-الضالع': 180, 'عدن-المحويت': 450, 'عدن-ريمة': 480, 'عدن-عمران': 480, 'عدن-أرخبيل سقطرى': 1500 };
+
+        function getDistance(from, to) {
+            if (from === to) return 0;
+            let key1 = `${from}-${to}`;
+            let key2 = `${to}-${from}`;
+            if (distanceData[key1]) return distanceData[key1];
+            if (distanceData[key2]) return distanceData[key2];
+            return 400; // مسافة افتراضية
+        }
+
+        let currentCalcData = { from: '', to: '', count: 0, price: 0 };
+
+        function calculatePrice() {
+            const from = document.getElementById('from-city').value;
+            const to = document.getElementById('to-city').value;
+            const count = parseInt(document.getElementById('container-count').value);
+
+            if (from === to) { alert("الرجاء اختيار مدينتين مختلفتين!"); return; }
+            if (count < 1) { alert("عدد الحاويات يجب أن يكون 1 على الأقل"); return; }
+
+            const distance = getDistance(from, to);
+            let totalPrice = (50000 + (distance * 600)) * count;
+            if (count >= 3) totalPrice = totalPrice * 0.95;
+
+            currentCalcData = { from, to, count, price: Math.round(totalPrice) };
+
+            document.getElementById('price-result').innerText = currentCalcData.price.toLocaleString();
+            document.getElementById('distance-result').innerText = `المسافة التقديرية: ${distance} كم | عدد الحاويات: ${count}`;
+            document.getElementById('result-box').style.display = 'block';
+        }
+
+        // نظام الحجز وسند الطلب
+        let pendingBooking = null;
+
+        function openBookingModal(from, to, count, price) {
+            pendingBooking = { from, to, count, price };
+            document.getElementById('booking-modal').classList.add('active');
+        }
+
+        function openBookingFromCalc() {
+            if(currentCalcData.from) {
+                openBookingModal(currentCalcData.from, currentCalcData.to, currentCalcData.count, currentCalcData.price);
+            }
+        }
+
+        async function submitBooking() {
+            const name = document.getElementById('client-name').value;
+            const phone = document.getElementById('client-phone').value;
+            const address = document.getElementById('client-address').value;
+
+            if (!name || !phone || !address) {
+                alert("الرجاء إدخال جميع البيانات المطلوبة!");
+                return;
+            }
+
+            const btn = document.getElementById('submit-btn');
+            btn.innerText = "جاري الحفظ...";
+            btn.disabled = true;
+
+            const dateObj = new Date();
+            const dateStr = dateObj.toLocaleDateString('ar-YE');
+            
+            const bookingData = {
+                name, phone, address, 
+                date: dateStr,
+                dateISO: dateObj.toISOString(), // للتخزين والترتيب في Firebase
+                from: pendingBooking.from,
+                to: pendingBooking.to,
+                count: pendingBooking.count,
+                price: pendingBooking.price
+            };
+
+            // حفظ البيانات في Firebase (سيتم استدعاء الدالة من السكربت العلوي)
+            if(window.saveOrderToDatabase) {
+                await window.saveOrderToDatabase(bookingData);
+            } else {
+                console.warn("Firebase لم يتم تحميله بشكل صحيح، يتم الحفظ محلياً.");
+                // Fallback في حالة عدم تحميل Firebase
+                let orders = JSON.parse(localStorage.getItem('alwadood_orders')) || [];
+                orders.push(bookingData);
+                localStorage.setItem('alwadood_orders', JSON.stringify(orders));
+            }
+
+            // تعبئة السند
+            document.getElementById('v-date').innerText = dateStr;
+            document.getElementById('v-client-name').innerText = name;
+            document.getElementById('v-client-phone').innerText = phone;
+            document.getElementById('v-client-address').innerText = address;
+            document.getElementById('v-from').innerText = bookingData.from;
+            document.getElementById('v-to').innerText = bookingData.to;
+            document.getElementById('v-count').innerText = bookingData.count + " حاوية";
+            document.getElementById('v-price').innerText = bookingData.price.toLocaleString() + " ريال يمني";
+
+            // إغلاق النافذة وفتح السند
+            closeModal('booking-modal');
+            document.getElementById('voucher-modal').classList.add('active');
+
+            // تنظيف الحقول وإعادة الزر
+            document.getElementById('client-name').value = '';
+            document.getElementById('client-phone').value = '';
+            document.getElementById('client-address').value = '';
+            btn.innerText = "إنشاء سند الطلب";
+            btn.disabled = false;
+        }
+
+        function shareWhatsApp() {
+            const text = `*مكتب الودود للنقل الثقيل*%0A` +
+                         `نحن السيد/السادة: ${document.getElementById('v-client-name').innerText}%0A` +
+                         `رقم الهاتف: ${document.getElementById('v-client-phone').innerText}%0A` +
+                         `العنوان: ${document.getElementById('v-client-address').innerText}%0A%0A` +
+                         `*نرجو من شركتكم تلبية طلبنا بنقل الحاويات التالية:*%0A` +
+                         `📍 من: ${document.getElementById('v-from').innerText}%0A` +
+                         `📍 إلى: ${document.getElementById('v-to').innerText}%0A` +
+                         `📦 عدد الحاويات: ${document.getElementById('v-count').innerText}%0A` +
+                         `💰 التكلفة التقديرية: ${document.getElementById('v-price').innerText}%0A%0A` +
+                         `شاكرين لكم حسن تعاونكم.`;
+            window.open(`https://wa.me/967772120250?text=${text}`, '_blank');
+        }
+
+        // لوحة التحكم
+        function showAdminLogin() {
+            document.getElementById('main-site').style.display = 'none';
+            document.getElementById('admin-dashboard').style.display = 'block';
+            document.getElementById('login-screen').style.display = 'block';
+            document.getElementById('dashboard-content').style.display = 'none';
+        }
+
+        function hideAdmin() {
+            document.getElementById('main-site').style.display = 'block';
+            document.getElementById('admin-dashboard').style.display = 'none';
+        }
+
+        function loginAdmin() {
+            const email = document.getElementById('admin-email').value;
+            const pass = document.getElementById('admin-pass').value;
+
+            if (email === 'admin@alwadood.com' && pass === '12345') {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('dashboard-content').style.display = 'block';
+                renderDashboard();
+            } else {
+                alert('بيانات الدخول غير صحيحة!');
+            }
+        }
+
+        async function renderDashboard() {
+            let orders = [];
+            
+            // جلب البيانات من Firebase (سيتم استدعاء الدالة من السكربت العلوي)
+            if (window.getOrders) {
+                orders = await window.getOrders();
+            } else {
+                orders = JSON.parse(localStorage.getItem('alwadood_orders')) || [];
+            }
+            
+            // 1. عرض سجل الطلبات
+            const ordersTable = document.getElementById('orders-table');
+            ordersTable.innerHTML = '';
+            
+            if (orders.length === 0) {
+                ordersTable.innerHTML = '<tr><td colspan="7" style="text-align:center;">لا توجد طلبات حتى الآن</td></tr>';
+            } else {
+                orders.forEach(o => {
+                    ordersTable.innerHTML += `
+                        <tr>
+                            <td>${o.date}</td>
+                            <td><strong>${o.name}</strong></td>
+                            <td>${o.phone}</td>
+                            <td>${o.from}</td>
+                            <td>${o.to}</td>
+                            <td>${o.count}</td>
+                            <td style="color: var(--success); font-weight: bold;">${o.price.toLocaleString()}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // 2. حساب العملاء الأكثر طلباً (VIP)
+            let clientStats = {};
+            orders.forEach(o => {
+                if (!clientStats[o.phone]) {
+                    clientStats[o.phone] = { name: o.name, address: o.address, count: 0 };
+                }
+                clientStats[o.phone].count++;
+            });
+
+            let sortedClients = Object.keys(clientStats).map(phone => {
+                return { phone, ...clientStats[phone] };
+            }).sort((a, b) => b.count - a.count);
+
+            const vipTable = document.getElementById('vip-clients-table');
+            vipTable.innerHTML = '';
+            
+            if (sortedClients.length === 0) {
+                vipTable.innerHTML = '<tr><td colspan="5" style="text-align:center;">لا توجد بيانات عملاء</td></tr>';
+            } else {
+                sortedClients.forEach(c => {
+                    let badge = c.count >= 3 ? '<span class="badge badge-vip">عميل مميز ⭐</span>' : 'عادي';
+                    vipTable.innerHTML += `
+                        <tr>
+                            <td><strong>${c.name}</strong></td>
+                            <td>${c.phone}</td>
+                            <td>${c.address}</td>
+                            <td style="color: var(--accent); font-weight: bold;">${c.count} طلب</td>
+                            <td>${badge}</td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+    </script>
+</body>
+</html>
