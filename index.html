@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مكتب ودود للنقل الثقيل-</title>
+    <title>مكتب ودود للنقل الثقيل </title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
-        /* ================= الثيمات (الزيتوني كافتراضي) ================= */
+        /* ================= الثيمات ================= */
         :root {
             /* الثيم الافتراضي: زيتوني وأبيض */
             --bg-color: #f8faf8;
@@ -59,7 +59,7 @@
             --accent: #ff8fa3;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; transition: all 0.3s ease; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; transition: background-color 0.3s ease, color 0.3s ease; }
         body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; min-height: 100vh; }
 
         /* الرسوم المتحركة في الخلفية */
@@ -407,7 +407,7 @@
         <!-- شاشة الدخول -->
         <div id="login-screen" class="login-box">
             <h2 style="color: var(--primary); margin-bottom: 20px;">تسجيل دخول المدير</h2>
-            <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 15px;">الإيميل: sgeanashwan@gmail.com<br>الباسورد: 123456</p>
+            <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 15px;">يرجى استخدام بيانات Firebase الخاصة بك</p>
             <input type="email" id="admin-email" placeholder="البريد الإلكتروني">
             <input type="password" id="admin-pass" placeholder="كلمة المرور">
             <button class="btn btn-primary" onclick="loginAdmin()" style="margin-top: 15px;">دخول</button>
@@ -452,11 +452,14 @@
         </div>
     </div>
 
-    <!-- Firebase Integration -->
+    <!-- ==================== Firebase Integration & Auth ==================== -->
     <script type="module">
+        // استيراد دوال Firebase المطلوبة
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+        // إعدادات Firebase الخاصة بك
         const firebaseConfig = {
             apiKey: "AIzaSyDPp5OQAzuJOMBsnUQBJWVMcDeeCcSZnGE",
             authDomain: "alwadood-transport.firebaseapp.com",
@@ -466,19 +469,23 @@
             appId: "1:622121306918:web:12c682f48aa65eb4718fe7"
         };
 
+        // تهيئة Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
+        // دالة حفظ طلب جديد في Firestore
         window.saveOrderToDatabase = async function(order) {
             try {
                 await addDoc(collection(db, "orders"), order);
-                console.log("تم حفظ الطلب في Firebase");
+                console.log("تم حفظ الطلب بنجاح!");
             } catch (e) {
-                console.error("خطأ في الحفظ: ", e);
-                alert("حدث خطأ أثناء الاتصال بقاعدة البيانات.");
+                console.error("خطأ في حفظ الطلب: ", e);
+                alert("حدث خطأ أثناء الاتصال بقاعدة البيانات. تأكد من قواعد الأمان (Rules).");
             }
         };
 
+        // دالة جلب الطلبات من Firestore
         window.getOrders = async function() {
             try {
                 const ordersCol = collection(db, "orders");
@@ -490,19 +497,32 @@
                 });
                 return orders;
             } catch (e) {
-                console.error("خطأ في الجلب: ", e);
+                console.error("خطأ في جلب الطلبات: ", e);
                 return [];
+            }
+        };
+
+        // دالة تسجيل الدخول الحقيقية عبر Firebase Auth
+        window.firebaseLogin = async function(email, password) {
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                return { success: true, user: userCredential.user };
+            } catch (error) {
+                console.error("Login Error:", error.code);
+                return { success: false, error: error.message };
             }
         };
     </script>
 
-    <!-- Main JS -->
+    <!-- ==================== Main JS Logic ==================== -->
     <script>
+        // إدارة الثيمات
         function setTheme(themeName) {
             document.body.className = '';
             if (themeName !== '') document.body.classList.add(themeName);
         }
 
+        // إدارة القائمة
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
         }
@@ -511,6 +531,7 @@
             document.getElementById(modalId).classList.remove('active');
         }
 
+        // المحافظات
         const yemenGovernorates = ["عدن", "صنعاء", "تعز", "الحديدة", "إب", "ذمار", "حضرموت", "حجة", "صعدة", "البيضاء", "أبين", "الجوف", "المحويت", "ريمة", "مأرب", "المهرة", "شبوة", "لحج", "الضالع", "عمران", "أرخبيل سقطرى"];
 
         function populateGovernorates() {
@@ -525,6 +546,7 @@
         }
         populateGovernorates();
 
+        // حساب المسافات والتكلفة
         const distanceData = { 'عدن-صنعاء': 450, 'عدن-تعز': 250, 'عدن-حضرموت': 700, 'عدن-الحديدة': 500, 'عدن-إب': 300, 'عدن-ذمار': 380, 'عدن-لحج': 45, 'عدن-أبين': 120, 'عدن-شبوة': 450, 'عدن-المهرة': 1100, 'عدن-مأرب': 550, 'عدن-الجوف': 600, 'عدن-صعدة': 650, 'عدن-حجة': 550, 'عدن-البيضاء': 250, 'عدن-الضالع': 180, 'عدن-المحويت': 450, 'عدن-ريمة': 480, 'عدن-عمران': 480, 'عدن-أرخبيل سقطرى': 1500 };
 
         function getDistance(from, to) {
@@ -533,7 +555,7 @@
             let key2 = `${to}-${from}`;
             if (distanceData[key1]) return distanceData[key1];
             if (distanceData[key2]) return distanceData[key2];
-            return 400;
+            return 400; // مسافة افتراضية
         }
 
         let currentCalcData = { from: '', to: '', count: 0, price: 0 };
@@ -548,7 +570,7 @@
 
             const distance = getDistance(from, to);
             let totalPrice = (50000 + (distance * 600)) * count;
-            if (count >= 3) totalPrice = totalPrice * 0.95;
+            if (count >= 3) totalPrice = totalPrice * 0.95; // خصم
 
             currentCalcData = { from, to, count, price: Math.round(totalPrice) };
 
@@ -557,6 +579,7 @@
             document.getElementById('result-box').style.display = 'block';
         }
 
+        // نظام الحجز
         let pendingBooking = null;
 
         function openBookingModal(from, to, count, price) {
@@ -601,6 +624,7 @@
                 await window.saveOrderToDatabase(bookingData);
             }
 
+            // تعبئة السند
             document.getElementById('v-date').innerText = dateStr;
             document.getElementById('v-client-name').innerText = name;
             document.getElementById('v-client-phone').innerText = phone;
@@ -610,9 +634,11 @@
             document.getElementById('v-count').innerText = bookingData.count + " حاوية";
             document.getElementById('v-price').innerText = bookingData.price.toLocaleString() + " ريال يمني";
 
+            // إغلاق النافذة وفتح السند
             closeModal('booking-modal');
             document.getElementById('voucher-modal').classList.add('active');
 
+            // إعادة تعيين الحقول
             document.getElementById('client-name').value = '';
             document.getElementById('client-phone').value = '';
             document.getElementById('client-address').value = '';
@@ -634,6 +660,7 @@
             window.open(`https://wa.me/967772120250?text=${text}`, '_blank');
         }
 
+        // لوحة التحكم
         function showAdminLogin() {
             document.getElementById('main-site').style.display = 'none';
             document.getElementById('admin-dashboard').style.display = 'block';
@@ -646,19 +673,35 @@
             document.getElementById('admin-dashboard').style.display = 'none';
         }
 
-        function loginAdmin() {
+        // تسجيل الدخول باستخدام Firebase
+        async function loginAdmin() {
             const email = document.getElementById('admin-email').value;
             const pass = document.getElementById('admin-pass').value;
 
-            if (email === 'sgeanashwan@gmail.com' && pass === '123456') {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('dashboard-content').style.display = 'block';
-                renderDashboard();
+            if (!email || !pass) {
+                alert("الرجاء إدخال البريد الإلكتروني وكلمة المرور");
+                return;
+            }
+
+            if (window.firebaseLogin) {
+                const result = await window.firebaseLogin(email, pass);
+                
+                if (result.success) {
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('dashboard-content').style.display = 'block';
+                    renderDashboard();
+                    // تفريغ الحقول بعد الدخول
+                    document.getElementById('admin-email').value = '';
+                    document.getElementById('admin-pass').value = '';
+                } else {
+                    alert('بيانات الدخول غير صحيحة! تأكد من الإيميل والباسورد المسجل في Firebase.');
+                }
             } else {
-                alert('بيانات الدخول غير صحيحة! تأكد من كتابة الإيميل والباسورد بشكل صحيح.');
+                alert("جاري تحميل قاعدة البيانات، يرجى المحاولة بعد قليل...");
             }
         }
 
+        // عرض البيانات في لوحة التحكم
         async function renderDashboard() {
             let orders = [];
             if (window.getOrders) {
@@ -686,6 +729,7 @@
                 });
             }
 
+            // حساب العملاء VIP
             let clientStats = {};
             orders.forEach(o => {
                 if (!clientStats[o.phone]) {
